@@ -12,7 +12,7 @@
 
 <script>
 import header from './components/header/Header'
-// const ERR_OK = 0
+const ERR_OK = 0
 
 export default {
   name: 'App',
@@ -25,11 +25,10 @@ export default {
     'v-header': header
   },
   created () {
-    this.$http.get('../static/data.json').then((response) => {
-      response = response.body.seller
-      if (response) {
-        this.seller = response
-        console.log(this.seller)
+    this.$http.get('/api/sell').then((response) => {
+      response = response.body
+      if (response.errno === ERR_OK) {
+        this.seller = response.data
       }
     })
   }

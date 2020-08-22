@@ -46,6 +46,7 @@
 import BScroll from 'better-scroll'
 import shopcart from '../shopcart/shopcart'
 import cartcontrol from '../cartcontrol/cartcontrol'
+const ERR_OK = 0
 
 export default {
   name: 'Goods',
@@ -66,6 +67,7 @@ export default {
     }
   },
   computed: {
+    // 在类的定义的时候，使用currentIndex===index 来给对应的li加上样式
     currentIndex () {
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i]
@@ -89,12 +91,14 @@ export default {
     }
   },
   methods: {
+    // 跳转的时候传入index就可以了，另外需要打开foodList的click事件，默认better-scorll屏蔽该所有事件
     selectMenu (index, event) {
       if (!event._constructed) {
         return
       }
       let foodList = this.$refs.foodwrap.getElementsByClassName('foodlisthook')
       let el = foodList[index]
+      // 300 是动画时间
       this.foodScroll.scrollToElement(el, 300)
     },
     _initScroll () {
@@ -105,8 +109,10 @@ export default {
         click: true,
         probeType: 3
       })
+      // **这里面的pos.y 对应着我们的卷曲高度值。 pos表示卷曲的位置**
       this.foodScroll.on('scroll', (pos) => {
         this.scrollY = Math.abs(Math.round(pos.y))
+        console.log(this.scrollY, 'foodscroll')
       })
     },
     _calculateHeight () {
@@ -122,10 +128,10 @@ export default {
   },
   created () {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
-    this.$http.get('../static/data.json').then((response) => {
-      response = response.body.goods
-      if (response) {
-        this.goods = response
+    this.$http.get('/api/goods').then((response) => {
+      response = response.body
+      if (response.errno === ERR_OK) {
+        this.goods = response.data
         this.$nextTick(() => {
           this._initScroll()
           this._calculateHeight()

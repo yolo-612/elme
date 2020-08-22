@@ -26,6 +26,6 @@ export default new Router({
       component: Seller
     }
   ],
-  redirect: '/goods',
+  // redirect: '/goods',
   linkActiveClass: 'active'
 })
